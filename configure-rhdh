@@ -9,6 +9,8 @@ CM_NS=rhdh
 CM=workdir/cm.yaml
 AC=workdir/app-config.yaml 
 
+mkdir -p workdir 
+
 kubectl get configmap -n $CM_NS $CM_NAME -o yaml >$CM
 yq .data.\"app-config.yaml\" $CM > $AC
 
