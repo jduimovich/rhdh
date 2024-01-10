@@ -1,6 +1,7 @@
 
 Sample scripts to modify the app-config in the config map for RHDH
 
+
 Run
 ```
 bash configure-rhdh

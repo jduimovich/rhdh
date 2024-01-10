@@ -4,8 +4,8 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # source it to allow it to exit this script
 source $SCRIPTDIR/verify-dependencies 
 
-CM_NAME=developer-hub-app-config
-CM_NS=rhdh  
+CM_NAME=dance-1704860556-developer-hub-app-config
+CM_NS=dance-installer  
 CM=workdir/cm.yaml
 AC=workdir/app-config.yaml 
 
@@ -19,9 +19,7 @@ for option in $ENABLED ; do
   yq -i ".enabled.$option = true" $AC 
 done  
 
-yq -i ".app.baseUrl = \"https://$BACKSTAGE\"" $AC 
-
-BACKSTAGE=$(kubectl get routes -n rhdh developer-hub -o jsonpath={.spec.host})
+BACKSTAGE=$(kubectl get routes -n $CM_NS developer-hub -o jsonpath={.spec.host})
 
 # URL 
 yq -i ".app.baseUrl = \"https://$BACKSTAGE\"" $AC 

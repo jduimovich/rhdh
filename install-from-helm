@@ -1,0 +1,6 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+source $SCRIPTDIR/verify-dependencies
+
+oc new-project
+echo "Install from Helm"
+helm install rhtap-dance/dance --generate-name --namespace dance-installer --values values.yaml

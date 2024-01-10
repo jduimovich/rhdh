@@ -2,9 +2,14 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Verify the dependencies for the scripts.
 # Tokens, users and binaries
-
-ANY_ERRORS=false
-
+ENV_VARS_MUST_EXIST=" MY_GITHUB_TOKEN  MY_GITHUB_OATH_CLIENT MY_GITHUB_OATH_SECRET"
+ENV_VARS_MUST_EXIST+=" MY_GITLAB_TOKEN MY_GITLAB_OATH_CLIENT MY_GITLAB_OATH_SECRET"  
+ENV_VARS_MUST_EXIST+=" GITHUB_APP_APP_ID GITHUB_APP_CLIENT_ID GITHUB_APP_CLIENT_SECRET"  
+ENV_VARS_MUST_EXIST+=" GITHUB_APP_WEBHOOK_URL GITHUB_APP_WEBHOOK_SECRET GITHUB_APP_PRIVATE_KEY"  
+ENV_VARS_MUST_EXIST+=" WEBHOOK_SECRET"  
+ENV_VARS_MUST_EXIST+=" ROX_API_TOKEN"  
+ 
+ANY_ERRORS=false 
 
 function binary_check () 
 {
@@ -20,8 +25,8 @@ function binary_check ()
 
 function env_must_be_defined () 
 {
-  env_var=$1
-  if [ -z ${!env_var} ]; then
+  env_var="$1" 
+  if [ -z "${!env_var}" ]; then
     echo "Error: $env_var missing definition."
     ANY_ERRORS=true
   else  
@@ -30,7 +35,6 @@ function env_must_be_defined ()
 }
 
 echo "ENV vars:"
-ENV_VARS_MUST_EXIST="MY_GITHUB_TOKEN  MY_GITLAB_TOKEN MY_GITHUB_OATH_CLIENT MY_GITHUB_OATH_SECRET MY_GITLAB_OATH_CLIENT MY_GITLAB_OATH_SECRET"
 for env in $ENV_VARS_MUST_EXIST; do
   env_must_be_defined $env 
 done 
