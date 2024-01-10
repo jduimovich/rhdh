@@ -5,7 +5,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $SCRIPTDIR/verify-dependencies 
 
 CM_NAME=dance-1704860556-developer-hub-app-config
-CM_NS=dance-installer  
+CM_NS=rhdh
 CM=workdir/cm.yaml
 AC=workdir/app-config.yaml 
 

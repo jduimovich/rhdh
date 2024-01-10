@@ -62,7 +62,7 @@ developer-hub:
 pipelines:
   pipelines-as-code:
     github:
-      application-id: 123456
+      application-id: ${PAC_GITHUB_APP_ID}
       private-key: |
         Insert the private key data, including the '---- ... ----'
         header and footer.
