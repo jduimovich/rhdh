@@ -22,7 +22,7 @@ quay:
 # This is a copy of the helm, updated to use env vars and validate they all exist to simplify install.
 # 
 acs:
-  central-endpoint: central.rhacs-operator.svc.cluster.local:443
+  central-endpoint:  ${ROX_API_ENDPOINT}
   api-token: ${ROX_API_TOKEN}
 developer-hub:
   app-config:
@@ -32,7 +32,7 @@ developer-hub:
         github:
           development:
             clientId: ${MY_GITHUB_OATH_CLIENT}
-            clientSecret: ${MY_GITHUB_OATH_SECRET}  
+            clientSecret: ${MY_GITHUB_OATH_SECRET}    
     integrations:
       github:
         - host: github.com
@@ -63,9 +63,7 @@ pipelines:
   pipelines-as-code:
     github:
       application-id: ${PAC_GITHUB_APP_ID}
-      private-key: |
-        Insert the private key data, including the '---- ... ----'
-        header and footer.
-      webhook-secret: ${WEBHOOK_SECRET}
+      private-key: ${PAC_PRIVATE_KEY}
+      webhook-secret: ${PAC_WEBHOOK_SECRET}
 
 

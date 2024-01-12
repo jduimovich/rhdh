@@ -1,0 +1,7 @@
+
+PUSH_HANDLER=.tekton/docker-push.yaml
+PRUN=$(mktemp)
+tkn-pac  resolve -f $PUSH_HANDLER | tee $PRUN  | oc create -f -
+echo "Image Location: " $(yq '.spec.params[] | select(.name == "output-image").value'  $PRUN) 
+
+  

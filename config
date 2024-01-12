@@ -1,0 +1,4 @@
+export CM_NAME=dance-developer-hub-app-config
+export CM_NS=dance-installer 
+export CM=workdir/cm.yaml
+export AC=workdir/app-config.yaml 

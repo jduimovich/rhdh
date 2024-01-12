@@ -1,0 +1,22 @@
+
+# fill in the ones you have
+# ignore the rest but don't expect stuff to work
+# if you don't provide values the specific feature will not function
+MY_GITHUB_OATH_CLIENT=fill-me-in
+MY_GITHUB_OATH_SECRET=fill-me-in 
+MY_GITLAB_TOKEN=fill-me-in
+MY_GITLAB_OATH_CLIENT=fill-me-in
+MY_GITLAB_OATH_SECRET=fill-me-in 
+GITHUB_APP_APP_ID=fill-me-in
+GITHUB_APP_CLIENT_ID=fill-me-in
+GITHUB_APP_CLIENT_SECRET=fill-me-in
+GITHUB_APP_WEBHOOK_URL=fill-me-in
+GITHUB_APP_WEBHOOK_SECRET=fill-me-in
+GITHUB_APP_PRIVATE_KEY=fill-me-in  
+PAC_GITHUB_APP_ID=fill-me-in
+PAC_PRIVATE_KEY=fill-me-in
+PAC_WEBHOOK_SECRET=fill-me-in
+PAC_WEBHOOK_SECRET=fill-me-in 
+ROX_API_ENDPOINT=central.rhacs-operator.svc.cluster.local:443
+ROX_API_TOKEN=fill-me-in 
+ 

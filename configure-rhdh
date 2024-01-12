@@ -3,11 +3,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # Scripts to configure app-config.txt in the developer-hub-app-config configmap.
 # source it to allow it to exit this script
 source $SCRIPTDIR/verify-dependencies 
-
-CM_NAME=dance-1704860556-developer-hub-app-config
-CM_NS=rhdh
-CM=workdir/cm.yaml
-AC=workdir/app-config.yaml 
+source $SCRIPTDIR/config 
 
 mkdir -p workdir 
 
@@ -23,8 +19,10 @@ BACKSTAGE=$(kubectl get routes -n $CM_NS developer-hub -o jsonpath={.spec.host})
 
 # URL 
 yq -i ".app.baseUrl = \"https://$BACKSTAGE\"" $AC 
+yq -i ".backend.baseUrl = \"https://$BACKSTAGE\"" $AC 
+yq -i ".backend.cors.origin = \"https://$BACKSTAGE\"" $AC 
 
-# Github and Gitlab 
+# Github and Gitlab  
 
 yq -i ".integrations.github  = [{\"host\": \"github.com\", \"token\": \"$MY_GITHUB_TOKEN\"}]"  $AC  
 yq -i ".integrations.gitlab  = [{\"host\": \"gitlab.com\", \"token\": \"$MY_GITLAB_TOKEN\"}]"  $AC    

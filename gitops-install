@@ -1,0 +1,14 @@
+
+
+APP_NS=$(yq .spec.destination.namespace application.yaml) 
+kubectl get ns $APP_NS &> /dev/null
+ERR=$? 
+if [  "$ERR" != "0" ]
+then     
+    oc new-project $APP_NS
+    oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops
+else  
+    echo "$APP_NS exists"
+    oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops &> /dev/null
+fi
+oc apply -f application.yaml  

@@ -2,12 +2,25 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Verify the dependencies for the scripts.
 # Tokens, users and binaries
+
+# Github, token for direct acces, oauth app for login
+
 ENV_VARS_MUST_EXIST=" MY_GITHUB_TOKEN  MY_GITHUB_OATH_CLIENT MY_GITHUB_OATH_SECRET"
-ENV_VARS_MUST_EXIST+=" MY_GITLAB_TOKEN MY_GITLAB_OATH_CLIENT MY_GITLAB_OATH_SECRET"  
+
+# Gitlab, token for direct acces, oauth app for login
+ENV_VARS_MUST_EXIST+=" MY_GITLAB_TOKEN MY_GITLAB_OATH_CLIENT MY_GITLAB_OATH_SECRET"
+
+# Github App 
 ENV_VARS_MUST_EXIST+=" GITHUB_APP_APP_ID GITHUB_APP_CLIENT_ID GITHUB_APP_CLIENT_SECRET"  
 ENV_VARS_MUST_EXIST+=" GITHUB_APP_WEBHOOK_URL GITHUB_APP_WEBHOOK_SECRET GITHUB_APP_PRIVATE_KEY"  
-ENV_VARS_MUST_EXIST+=" WEBHOOK_SECRET"   
-ENV_VARS_MUST_EXIST+=" PAC_GITHUB_APP_ID"  
+
+# Pipelines as Code Github App and Secret  
+
+ENV_VARS_MUST_EXIST+=" PAC_GITHUB_APP_ID PAC_PRIVATE_KEY PAC_WEBHOOK_SECRET"    
+
+# internal (local ACS can have an internal route default)
+export ROX_API_ENDPOINT="${ROX_API_ENDPOINT:-"central.rhacs-operator.svc.cluster.local:443"}" 
+ENV_VARS_MUST_EXIST+=" ROX_API_ENDPOINT ROX_API_TOKEN"  
 
 ANY_ERRORS=false 
 
