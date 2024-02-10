@@ -1,68 +1,12 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
-# Verify the dependencies for the scripts.
-# Tokens, users and binaries
-
-# Github, token for direct acces, oauth app for login
-
-ENV_VARS_MUST_EXIST=" MY_GITHUB_TOKEN  MY_GITHUB_OATH_CLIENT MY_GITHUB_OATH_SECRET"
-
-# Gitlab, token for direct acces, oauth app for login
-ENV_VARS_MUST_EXIST+=" MY_GITLAB_TOKEN MY_GITLAB_OATH_CLIENT MY_GITLAB_OATH_SECRET"
-
-# Github App 
-ENV_VARS_MUST_EXIST+=" GITHUB_APP_APP_ID GITHUB_APP_CLIENT_ID GITHUB_APP_CLIENT_SECRET"  
-ENV_VARS_MUST_EXIST+=" GITHUB_APP_WEBHOOK_URL GITHUB_APP_WEBHOOK_SECRET GITHUB_APP_PRIVATE_KEY"  
-
-# Pipelines as Code Github App and Secret  
-
-ENV_VARS_MUST_EXIST+=" PAC_GITHUB_APP_ID PAC_PRIVATE_KEY PAC_WEBHOOK_SECRET"    
-
-# internal (local ACS can have an internal route default)
-export ROX_API_ENDPOINT="${ROX_API_ENDPOINT:-"central.rhacs-operator.svc.cluster.local:443"}" 
-ENV_VARS_MUST_EXIST+=" ROX_API_ENDPOINT ROX_API_TOKEN"  
-
-ANY_ERRORS=false 
-
-function binary_check () 
-{
-  binary=$1
-  BINARY=$(which $binary)
-  if [ -z $BINARY ]; then
-    echo "Error: $env_var missing binary"
-    ANY_ERRORS=true
-  else  
-    echo "OK: $binary in $BINARY"  
-  fi 
-}
-
-function env_must_be_defined () 
-{
-  env_var="$1" 
-  if [ -z "${!env_var}" ]; then
-    echo "Error: $env_var missing definition."
-    ANY_ERRORS=true
-  else  
-    echo "OK: $env_var"  
-  fi 
-}
-
-echo "ENV vars:"
-for env in $ENV_VARS_MUST_EXIST; do
-  env_must_be_defined $env 
-done 
-
-echo "Binaries:"
-BINARIES_MUST_EXIST="yq jq oc"
-for env in $BINARIES_MUST_EXIST; do
-  binary_check $env 
-done 
-
-if [ "$ANY_ERRORS" == "true" ]; then
-  echo "---------- ERROR -----------------"
-  echo "Errors in configuration above, fix and rerun"
-  echo "----------"
-  exit -1
-fi
-echo "Env vars and binaries ok"
+# Verify the dependencies for the scripts from values 
   
+if [ -z "$1" ]; then
+    echo "Usage $0 values.yaml"
+    exit 0
+fi 
+
+ENV_VARS_MUST_EXIST=$(grep "\${" $1 | cut -d ':' -f 2 | tr -d '\${}' | xargs -n1 echo -n " ")
+BINARIES_MUST_EXIST="yq jq oc"
+$SCRIPTDIR/util/verify-deps-exist "$ENV_VARS_MUST_EXIST" "$BINARIES_MUST_EXIST"

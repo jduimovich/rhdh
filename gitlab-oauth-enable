@@ -1,0 +1,19 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+# Scripts to configure app-config.txt in the developer-hub-app-config configmap.
+# source it to allow it to exit this script 
+source $SCRIPTDIR/util/verify-deps-exist "MY_GITLAB_OATH_CLIENT MY_GITLAB_OATH_SECRET" "yq"
+source $SCRIPTDIR/config 
+
+$SCRIPTDIR/util/get-appconfig 
+
+# UPDATE AC  $AC 
+yq -i ".auth.providers.gitlab.development.clientId  = \"$MY_GITLAB_OATH_CLIENT\""  $AC   
+yq -i ".auth.providers.gitlab.development.clientSecret  = \"$MY_GITLAB_OATH_SECRET\""  $AC       
+
+$SCRIPTDIR/util/put-appconfig 
+$SCRIPTDIR/util/recycle-backstage 
+
+
+
+ 

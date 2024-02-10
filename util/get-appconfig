@@ -1,0 +1,10 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+# Get a current copy of app config from the cluster 
+source $SCRIPTDIR/config  
+mkdir -p workdir  
+kubectl get configmap -n $CM_NS $CM_NAME -o yaml >$CM
+yq .data.\"app-config.yaml\" $CM > $AC 
+
+
+ 

@@ -1,8 +1,7 @@
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
-source $SCRIPTDIR/verify-dependencies 
 
-NS=dance-installer
-DH_NAME=dance
+cd ../dance
+./bin/make.sh values 
+helm upgrade installer rhtap/rhtap --install --create-namespace --namespace rhtap --values private-values.yaml
 
-echo "Install from Helm" 
-helm upgrade  $DH_NAME  rhtap-dance/dance --install --create-namespace --namespace $NS --values workdir/values-secret.yaml
+
+ 

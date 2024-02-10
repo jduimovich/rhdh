@@ -1,3 +1,0 @@
-
-
-cat values.yaml | envsubst > workdir/values-secret.yaml

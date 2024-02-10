@@ -1,0 +1,13 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+# push back the app config unto the cluster and recycle the RHDH pod
+source $SCRIPTDIR/config   
+CONTENTS=$(cat $AC)  
+yq -i ".data.\"app-config.yaml\"=\"$CONTENTS\"" $CM   
+yq .data.\"app-config.yaml\" $CM 
+kubectl apply -n $CM_NS -f $CM
+# delete the pod labeled backstage 
+kubectl delete pods -n $CM_NS -l "app.kubernetes.io/component=backstage"
+
+
+
+ 
