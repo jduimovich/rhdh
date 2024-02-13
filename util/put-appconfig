@@ -1,0 +1,15 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+# push back the app config unto the cluster and recycle the RHDH pod
+source $SCRIPTDIR/../config   
+
+CONTENTS=$(cat $APP_CONFIG_FILE)  
+yq -i ".data.\"app-config.yaml\"=\"$CONTENTS\"" $APP_CONFIG_CM    
+kubectl apply -n $RHDH_NS -f $APP_CONFIG_CM    
+
+CONTENTS=$(cat $DYNAMIC_PLUGINS_FILE)  
+yq -i ".data.\"dynamic-plugins.yaml\"=\"$CONTENTS\"" $DYNAMIC_PLUGINS_CM    
+kubectl apply -n $RHDH_NS -f $DYNAMIC_PLUGINS_CM   
+
+
+
+ 

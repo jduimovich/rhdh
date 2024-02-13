@@ -1,0 +1,11 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+echo "Changes to cluster after default helm install"
+
+echo "Disable TLS from RHDH (dev mode only !) to allow argocd plugin to connect to local ArgoCD"
+bash $SCRIPTDIR/rhdh-ignore-tls  
+
+echo "Gitlab" 
+bash $SCRIPTDIR/enable-gitlab 
+echo "Techdocs"
+bash $SCRIPTDIR/enable-techdocs

@@ -1,0 +1,14 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"  
+source $SCRIPTDIR/../config     
+
+echo "Changes made to app-config.yaml" 
+echo "------------"
+diff $APP_CONFIG_FILE $APP_CONFIG_FILE.bak
+echo "^^^^^"  
+echo "Changes made to dynamic-plugins.yaml" 
+echo "------------"
+diff $DYNAMIC_PLUGINS_FILE $DYNAMIC_PLUGINS_FILE.bak
+echo "^^^^^"
+ 
+
+ 

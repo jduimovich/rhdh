@@ -1,38 +1,23 @@
 
-Sample scripts to modify the app-config in the config map for RHDH
+RHDH Post Install Scripts
 
-This repo augements the offical installer with missing features. 
+Scripts to modify the app-config in the config map for RHDH
+
+This repo augments the offical RHTAP installer with missing features and is used to prototype and evolve the official installer. 
  
-### What envs do I need to set ?
-
-```
-bash verify-dependencies values.yaml 
-
-```
+It uses some helper scripts to  fetch the app-config from your cluster and put the contents into a workdir for updates. After updating the working file, it gets pushed back to the cluster config map.  
 
 
 ### Using the helm chart
 
+Install from helm, the default scripts just use the helm installer. 
+
 ```
 bash install-from-helm
+ 
+### Post install 
 
-```
-###  configuring the app-config.yaml
-
-If you install RHDH manually, you can run the  `configure-rhdh` script.
-
-```
-bash configure-rhdh
-```
+`rhdh-ignore-tls`  configure RHDH to ignore tls errors, used to allow the argocd plugin to connect to non-secure endpoints such as ArgoCD running on CRC, or private instance with self-signed keys. 
 
 
-
-```
-export MY_GITHUB_TOKEN=
-export MY_GITLAB_TOKEN=
-export MY_GITHUB_OATH_CLIENT=
-export MY_GITHUB_OATH_SECRET=
-export MY_GITLAB_OATH_CLIENT=
-export MY_GITLAB_OATH_SECRET=
-```
 

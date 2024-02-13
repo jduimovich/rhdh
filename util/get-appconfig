@@ -1,0 +1,15 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+# Get a current copy of app config from the cluster 
+source $SCRIPTDIR/../config  
+mkdir -p workdir  
+
+kubectl get configmap -n $RHDH_NS $APP_CONFIG_CM_NAME -o yaml >$APP_CONFIG_CM
+yq .data.\"app-config.yaml\" $APP_CONFIG_CM > $APP_CONFIG_FILE 
+cp $APP_CONFIG_FILE $APP_CONFIG_FILE.bak
+
+kubectl get configmap -n $RHDH_NS $DYNAMIC_PLUGINS_NAME -o yaml >$DYNAMIC_PLUGINS_CM
+yq .data.\"dynamic-plugins.yaml\" $DYNAMIC_PLUGINS_CM > $DYNAMIC_PLUGINS_FILE 
+cp $DYNAMIC_PLUGINS_FILE $DYNAMIC_PLUGINS_FILE.bak
+
+
+  

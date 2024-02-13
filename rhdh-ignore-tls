@@ -1,3 +1,2 @@
 kubectl set env deployment/installer-developer-hub NODE_TLS_REJECT_UNAUTHORIZED=0 -n rhtap
-
 kubectl get deployment  -n rhtap installer-developer-hub -o jsonpath={.spec.template.spec.containers[0].env}  | jq
