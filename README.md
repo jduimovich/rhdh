@@ -14,10 +14,20 @@ Install from helm, the default scripts just use the helm installer.
 
 ```
 bash install-from-helm
+```
  
 ### Post install 
 
-`rhdh-ignore-tls`  configure RHDH to ignore tls errors, used to allow the argocd plugin to connect to non-secure endpoints such as ArgoCD running on CRC, or private instance with self-signed keys. 
+```
+bash post-helm-install
+```
+The scripts assume the presence of env vars with passwords and tokens.
+They will print the required env vars if missing. 
 
-
+The current extensions are. 
+ 
+1. "Enable the certificate for ArgoCD"  
+2. "Enable gitlab"   
+3. "Create a demo namespace"   
+4. "Kube and service account hacks using pipeline SA"  
 

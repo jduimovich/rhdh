@@ -3,7 +3,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo "Additional config after default helm install"
 echo "When the installer implements these features, remove from here"
 
-echo "Disable TLS from RHDH to allow argocd plugin to connect to local ArgoCD"
+echo "Enable the certificate for ArgoCD"
 bash $SCRIPTDIR/rhdh-configure-tls
 
 echo "Enable gitlab" 
