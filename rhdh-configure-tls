@@ -1,0 +1,37 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+PATCH=$(mktemp)
+
+cat << EOF >$PATCH  
+[
+    {
+        "op": "add",
+        "path": "/spec/template/spec/containers/0/env/-",
+        "value": {
+            "name": "NODE_EXTRA_CA_CERTS",
+            "value": "/ingress-cert/ca.crt"
+        }
+    },
+    {
+        "op": "add",
+        "path": "/spec/template/spec/containers/0/volumeMounts/-",
+        "value": {
+            "name": "kube-root-ca",
+            "mountPath": "/ingress-cert"
+        }
+    },
+    {
+        "op": "add",
+        "path": "/spec/template/spec/volumes/-",
+        "value": {
+            "name": "kube-root-ca",
+            "configMap": {
+                "name": "kube-root-ca.crt",
+                "defaultMode": 420
+            }
+        }
+    }
+]
+EOF
+echo "----------"
+oc patch Deployment/installer-developer-hub -n rhtap --type=json --patch-file=$PATCH

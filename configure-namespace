@@ -1,0 +1,73 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+# Scripts to configure app-config.txt in the developer-hub-app-config configmap.
+# source it to allow it to exit this script 
+source $SCRIPTDIR/util/verify-deps-exist "ROX_API_TOKEN MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
+source $SCRIPTDIR/config 
+
+APP_NS=$1 
+if [ -z "$APP_NS" ]
+then
+    echo "Usage $0 namespace"
+    exit
+fi
+kubectl get ns $APP_NS &> /dev/null
+ERR=$?
+if [  "$ERR" != "0" ]
+then
+    oc new-project $APP_NS
+    oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops
+else
+    echo "$NEW_NS exists and is labelled for gitops"
+    oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops &> /dev/null
+fi
+
+#update repository 
+SECRET=workdir/secret.yaml
+cat <<SECRET >$SECRET
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitops-auth-secret
+type: kubernetes.io/basic-auth
+stringData:
+  password: $MY_GITHUB_TOKEN
+SECRET
+oc apply -n $APP_NS -f $SECRET
+ 
+QUAY_SECRET=workdir/quay-auth.yaml
+cat <<QUAY_SECRET >$QUAY_SECRET
+{
+  "auths": {
+    "quay.io/$MY_QUAY_USER": {
+      "auth": "$MY_QUAY_CLI_TOKEN",
+      "email": ""
+    }
+  }
+}
+QUAY_SECRET
+ 
+SECRET_NAME=redhat-appstudio-staginguser-pull-secret 
+if [  "$1" == "force" ]
+then
+    kubectl delete secret $SECRET_NAME
+fi 
+kubectl get secret $SECRET_NAME -n $APP_NS &> /dev/null
+ERR=$?
+if [  "$ERR" == "0" ]
+then
+    echo "Secret $SECRET_NAME already exists"
+else
+    kubectl create secret docker-registry $SECRET_NAME \
+        --from-file=.dockerconfigjson="$QUAY_SECRET" --dry-run=client -o yaml | \
+        kubectl apply -f -
+    oc secrets link pipeline $SECRET_NAME  --for=pull,mount
+fi 
+ 
+SECRET_NAME=rox-api-token 
+kubectl get secret $SECRET_NAME -n $APP_NS &> /dev/null
+ERR=$?
+if [  "$ERR" != "0" ]
+then
+    kubectl create secret generic $SECRET_NAME --from-literal=$SECRET_NAME=$ROX_API_TOKEN
+fi

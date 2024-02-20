@@ -1,7 +1,7 @@
 
 cd ../dance
 ./bin/make.sh values 
-helm upgrade installer rhtap/rhtap --install --create-namespace --namespace rhtap --values private-values.yaml
+helm upgrade installer rhtap/rhtap --timeout 10m --install --create-namespace --namespace rhtap --values private-values.yaml
 
 
  

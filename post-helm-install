@@ -1,11 +1,16 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
-echo "Changes to cluster after default helm install"
+echo "Additional config after default helm install"
+echo "When the installer implements these features, remove from here"
 
-echo "Disable TLS from RHDH (dev mode only !) to allow argocd plugin to connect to local ArgoCD"
-bash $SCRIPTDIR/rhdh-ignore-tls  
+echo "Disable TLS from RHDH to allow argocd plugin to connect to local ArgoCD"
+bash $SCRIPTDIR/rhdh-configure-tls
 
-echo "Gitlab" 
-bash $SCRIPTDIR/enable-gitlab 
-echo "Techdocs"
-bash $SCRIPTDIR/enable-techdocs
+echo "Enable gitlab" 
+bash $SCRIPTDIR/enable-gitlab  
+ 
+echo "Create a demo namespace" 
+bash $SCRIPTDIR/configure-namespace demo
+
+echo "Kube and service account" 
+bash $SCRIPTDIR/configure-service-account
