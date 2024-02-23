@@ -5,24 +5,9 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $SCRIPTDIR/util/verify-deps-exist "ROX_API_TOKEN MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
 source $SCRIPTDIR/config 
 
-APP_NS=$1 
-if [ -z "$APP_NS" ]
-then
-    echo "Usage $0 namespace"
-    exit
-fi
-kubectl get ns $APP_NS &> /dev/null
-ERR=$?
-if [  "$ERR" != "0" ]
-then
-    oc new-project $APP_NS
-    oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops
-else
-    echo "$NEW_NS exists and is labelled for gitops"
-    oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops &> /dev/null
-fi
+APP_NS=$(oc project --short)
 
-#update repository 
+# Secret for updat repo update repository 
 SECRET=workdir/secret.yaml
 cat <<SECRET >$SECRET
 apiVersion: v1

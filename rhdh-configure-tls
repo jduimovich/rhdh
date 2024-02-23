@@ -1,7 +1,13 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
-
+source $SCRIPTDIR/config 
 PATCH=$(mktemp)
 
+oc get Deployment/developer-hub -n rhtap -o yaml >$PATCH  
+if grep -q "NODE_EXTRA_CA_CERTS" $PATCH; then 
+    echo "Already Patched, exiting"
+    exit
+fi  
+echo "NODE_EXTRA_CA_CERTS being added to deployment"  
 cat << EOF >$PATCH  
 [
     {
@@ -32,6 +38,5 @@ cat << EOF >$PATCH
         }
     }
 ]
-EOF
-echo "----------"
-oc patch Deployment/installer-developer-hub -n rhtap --type=json --patch-file=$PATCH
+EOF 
+oc patch Deployment/developer-hub -n $RHDH_NS --type=json --patch-file=$PATCH

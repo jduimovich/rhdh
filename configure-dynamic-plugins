@@ -1,0 +1,61 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+ 
+source $SCRIPTDIR/config 
+
+$SCRIPTDIR/util/get-appconfig     
+CHANGES=false
+
+# Dynamic Plugins, check if installed and then add if missing
+# When the installer installs these, the check will be a noop
+PLUGINS=workdir/plugins.yaml
+yq .plugins $DYNAMIC_PLUGINS_FILE  >$PLUGINS 
+ 
+if ! grep -q "janus-idp-backstage-plugin-topology" $PLUGINS; then  
+echo "ENABLING - janus-idp-backstage-plugin-topology" 
+CHANGES=true
+cat <<TOPO_PLUGIN >$PLUGINS
+- disabled: false
+  package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-topology 
+TOPO_PLUGIN
+else 
+  echo "janus-idp-backstage-plugin-topology already enabled"
+fi
+ 
+if ! grep -q "dynamic-plugins/dist/janus-idp-backstage-plugin-tekton" $PLUGINS; then  
+echo "ENABLING - dynamic-plugins/dist/janus-idp-backstage-plugin-tekton"
+CHANGES=true 
+cat <<TEKTON_PLUGIN >>$PLUGINS
+- disabled: false
+  package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-tekton
+  pluginConfig:
+    dynamicPlugins:
+      frontend:
+        janus-idp.backstage-plugin-tekton:
+          mountPoints:
+          - config:
+              if:
+                allOf:
+                - isTektonCIAvailable
+              layout:
+                gridColumn: 1 / -1
+                gridRowStart: 1
+            importName: TektonCI
+            mountPoint: entity.page.ci/cards 
+TEKTON_PLUGIN
+else 
+  echo "dynamic-plugins/dist/janus-idp-backstage-plugin-tekton already enabled"
+fi
+ 
+if [ "$CHANGES" == "false" ]; then
+  echo "No changes required"
+  exit  
+fi 
+
+echo "includes:" > $DYNAMIC_PLUGINS_FILE
+echo "- dynamic-plugins.default.yaml" >> $DYNAMIC_PLUGINS_FILE
+echo "plugins:" >> $DYNAMIC_PLUGINS_FILE 
+cat $PLUGINS >> $DYNAMIC_PLUGINS_FILE
+
+$SCRIPTDIR/util/diff-appconfig  
+$SCRIPTDIR/util/put-appconfig 
+$SCRIPTDIR/util/recycle-backstage 

@@ -1,6 +1,6 @@
 
 export RHDH_NS=rhtap 
-export APP_CONFIG_CM_NAME=installer-developer-hub-app-config
+export APP_CONFIG_CM_NAME=developer-hub-app-config
 export DYNAMIC_PLUGINS_NAME=dynamic-plugins
 
 export APP_CONFIG_CM=workdir/app-config-cm.yaml

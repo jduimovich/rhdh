@@ -7,10 +7,7 @@ echo "Enable the certificate for ArgoCD"
 bash $SCRIPTDIR/rhdh-configure-tls
 
 echo "Enable gitlab" 
-bash $SCRIPTDIR/enable-gitlab  
- 
-echo "Create a demo namespace" 
-bash $SCRIPTDIR/configure-namespace demo
+bash $SCRIPTDIR/enable-gitlab   
 
-echo "Kube and service account" 
-bash $SCRIPTDIR/configure-service-account
+echo "Dynamic Plugins" 
+bash $SCRIPTDIR/configure-dynamic-plugins
