@@ -1,14 +1,18 @@
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+source $SCRIPTDIR/config 
+
 URL=https://sso-rhtap.apps-crc.testing/realms/chicken
 URL=http://tpa-infrastructure-keycloak.rhtap.svc.cluster.local 
 
-kubectl set env deployment/bombastic-api OIDC_PROVIDER_ISSUER_URL=$URL
-kubectl set env deployment/bombastic-api SWAGGER_UI_OIDC_ISSUER_URL=$URL
+kubectl set env deployment/bombastic-api -n $RHDH_NS OIDC_PROVIDER_ISSUER_URL=$URL
+kubectl set env deployment/bombastic-api -n $RHDH_NS SWAGGER_UI_OIDC_ISSUER_URL=$URL
  
-kubectl set env deployment/spog-api OIDC_PROVIDER_ISSUER_URL=$URL
-kubectl set env deployment/spog-api SWAGGER_UI_OIDC_ISSUER_URL=$URL
+kubectl set env deployment/spog-api -n $RHDH_NS OIDC_PROVIDER_ISSUER_URL=$URL
+kubectl set env deployment/spog-api -n $RHDH_NS SWAGGER_UI_OIDC_ISSUER_URL=$URL
 
-kubectl set env deployment/v11y-api OIDC_PROVIDER_ISSUER_URL=$URL       
+kubectl set env deployment/v11y-api -n $RHDH_NS OIDC_PROVIDER_ISSUER_URL=$URL       
 
-kubectl set env deployment/vexination-api OIDC_PROVIDER_ISSUER_URL=$URL   
-kubectl set env deployment/vexination-api SWAGGER_UI_OIDC_ISSUER_URL=$URL      
+kubectl set env deployment/vexination-api -n $RHDH_NS OIDC_PROVIDER_ISSUER_URL=$URL   
+kubectl set env deployment/vexination-api -n $RHDH_NS SWAGGER_UI_OIDC_ISSUER_URL=$URL      
     

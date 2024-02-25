@@ -2,22 +2,11 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $SCRIPTDIR/config 
 PATCH=$(mktemp)
 
-oc get Deployment/developer-hub -n rhtap -o yaml >$PATCH  
-if grep -q "NODE_EXTRA_CA_CERTS" $PATCH; then 
-    echo "Already Patched, exiting"
-    exit
-fi  
-echo "NODE_EXTRA_CA_CERTS being added to deployment"  
+DEPLOYMENT=deployment/bombastic-api 
+
+oc get $DEPLOYMENT -n rhtap -o yaml >$PATCH   
 cat << EOF >$PATCH  
-[
-    {
-        "op": "add",
-        "path": "/spec/template/spec/containers/0/env/-",
-        "value": {
-            "name": "NODE_EXTRA_CA_CERTS",
-            "value": "/ingress-cert/ca.crt"
-        }
-    },
+[ 
     {
         "op": "add",
         "path": "/spec/template/spec/containers/0/volumeMounts/-",
@@ -39,4 +28,4 @@ cat << EOF >$PATCH
     }
 ]
 EOF
-oc patch Deployment/developer-hub -n $RHDH_NS --type=json --patch-file=$PATCH
+oc patch  $DEPLOYMENT -n $RHDH_NS --type=json --patch-file=$PATCH
