@@ -7,7 +7,12 @@ source $SCRIPTDIR/config
 
 APP_NS=$(oc project --short)
 
-# Secret for updat repo update repository 
+echo "Configuring $APP_NS"
+
+
+
+echo "Secret for update repository task"
+ 
 SECRET=workdir/secret.yaml
 cat <<SECRET >$SECRET
 apiVersion: v1
@@ -20,6 +25,7 @@ stringData:
 SECRET
 oc apply -n $APP_NS -f $SECRET
  
+echo "Secret to push to Quay.io"
 QUAY_SECRET=workdir/quay-auth.yaml
 cat <<QUAY_SECRET >$QUAY_SECRET
 {
@@ -49,6 +55,7 @@ else
     oc secrets link pipeline $SECRET_NAME  --for=pull,mount
 fi 
  
+echo "Secret for ACS StackRox scanners "
 SECRET_NAME=rox-api-token 
 kubectl get secret $SECRET_NAME -n $APP_NS &> /dev/null
 ERR=$?
