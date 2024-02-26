@@ -8,6 +8,9 @@ export DISABLE_REFRESH=true
 echo "Enable the certificate for ArgoCD"
 bash $SCRIPTDIR/rhdh-configure-tls
 
+echo "Add Routes" 
+bash $SCRIPTDIR/kubernetes-add-routes
+
 echo "Enable gitlab" 
 bash $SCRIPTDIR/enable-gitlab   
 
@@ -15,6 +18,3 @@ echo "Dynamic Plugins"
 bash $SCRIPTDIR/configure-dynamic-plugins 
 
 export DISABLE_REFRESH=false
-
-echo "Add Routes" 
-bash $SCRIPTDIR/kubernetes-add-routes
