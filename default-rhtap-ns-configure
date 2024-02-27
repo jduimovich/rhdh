@@ -1,7 +1,10 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
-# Scripts to configure app-config.txt in the developer-hub-app-config configmap.
-# source it to allow it to exit this script 
+# Scripts to configure three namespaces for dev,stage,prod
+# the namespaces can exist in advance or you can run the templates and 
+# the namespaces will be created by app of apps
+# you can reuse a namespace trio across multiple templates
+# or every time. 
 source $SCRIPTDIR/util/verify-deps-exist "ROX_API_TOKEN MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
 source $SCRIPTDIR/config 
 
