@@ -1,0 +1,14 @@
+#kubectl annotate taskrun.tekton.dev/aaa-go-on-push-b79nm-acs-image-scan hack.io/xxx=123
+
+REPORT_TASK=acs-image-scan
+STEP=rox-image-scan
+NAMES=$(kubectl get taskruns -n rhtap-development -o name | grep $REPORT_TASK)
+
+for tr in $NAMES ; do 
+    echo $tr 
+    kubectl annotate -n rhtap-development $tr task.results.format=application/json
+    kubectl annotate -n rhtap-development $tr task.results.type=roxctl-image-check
+    kubectl annotate -n rhtap-development $tr task.results.key=SCAN_OUTPUT
+    kubectl annotate -n rhtap-development $tr task.output.location=logs
+    kubectl annotate -n rhtap-development $tr task.results.container=step-$STEP
+done  

@@ -5,9 +5,9 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # the namespaces will be created by app of apps
 # you can reuse a namespace trio across multiple templates
 # or every time. 
-source $SCRIPTDIR/util/verify-deps-exist "ROX_API_TOKEN MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
+source $SCRIPTDIR/util/verify-deps-exist "ACS__API_TOKEN ACS__CENTRAL_ENDPOINT MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
 source $SCRIPTDIR/config 
-
+  
 APP_NS_ROOT="${1:-rhtap}"
 APP_NS_DEV=$APP_NS_ROOT-development
 APP_NS_STAGE=$APP_NS_ROOT-stage
@@ -54,8 +54,10 @@ SECRET_NAME=rox-api-token
 kubectl get secret $SECRET_NAME -n $APP_NS_DEV &> /dev/null
 ERR=$? 
 if [  "$ERR" != "0" ]
-then
-    kubectl create secret generic $SECRET_NAME  -n $APP_NS_DEV  --from-literal=$SECRET_NAME=$ROX_API_TOKEN
+then 
+    kubectl create secret generic $SECRET_NAME -n $APP_NS_DEV  \
+      --from-literal=rox-api-token="${ACS__API_TOKEN}" \
+      --from-literal=rox-api-endpoint="${ACS__CENTRAL_ENDPOINT}"
 fi
 
 echo "Secret to push and pull from Quay.io"
@@ -85,11 +87,9 @@ for APP_NS in $ALL_NS ; do
           kubectl apply -n $APP_NS -f -
       oc secrets link pipeline -n $APP_NS $SECRET_NAME  --for=pull,mount
       oc secrets link default -n $APP_NS $SECRET_NAME  --for=pull,mount
+      kubectl patch serviceaccount pipeline \
+        -p "{\"imagePullSecrets\": [{\"name\": \"$SECRET_NAME\"}]}" -n $APP_NS
   fi 
 done 
 
- 
-
-
-
- 
+   
