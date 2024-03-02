@@ -87,6 +87,8 @@ for APP_NS in $ALL_NS ; do
           kubectl apply -n $APP_NS -f -
       oc secrets link pipeline -n $APP_NS $SECRET_NAME  --for=pull,mount
       oc secrets link default -n $APP_NS $SECRET_NAME  --for=pull,mount
+      kubectl patch serviceaccount default \
+        -p "{\"imagePullSecrets\": [{\"name\": \"$SECRET_NAME\"}]}" -n $APP_NS
       kubectl patch serviceaccount pipeline \
         -p "{\"imagePullSecrets\": [{\"name\": \"$SECRET_NAME\"}]}" -n $APP_NS
   fi 
