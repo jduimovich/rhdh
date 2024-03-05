@@ -14,7 +14,7 @@ mv private.new-env private.env
 
 # DEVELOPER_HUB__CATALOG__URL changes for reinstalls
 grep -v DEVELOPER_HUB__CATALOG__URL private.env > private.new-env
-diff private.env private.new-env >/dev/null 2>&1
+diff private.env private.new-env  
 ret=$? 
 if [[ $ret -eq 0 ]]; then
     echo "DEVELOPER_HUB__CATALOG__URL Unchanged "
