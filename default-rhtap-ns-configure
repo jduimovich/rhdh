@@ -51,14 +51,11 @@ oc apply -n $APP_NS_DEV -f $SECRET
  
 echo "Secret for ACS StackRox scanners "
 SECRET_NAME=rox-api-token 
-kubectl get secret $SECRET_NAME -n $APP_NS_DEV &> /dev/null
-ERR=$? 
-if [  "$ERR" != "0" ]
-then 
-    kubectl create secret generic $SECRET_NAME -n $APP_NS_DEV  \
-      --from-literal=rox-api-token="${ACS__API_TOKEN}" \
-      --from-literal=rox-api-endpoint="${ACS__CENTRAL_ENDPOINT}"
-fi
+kubectl delete secret $SECRET_NAME -n $APP_NS_DEV &> /dev/null
+kubectl create secret generic $SECRET_NAME -n $APP_NS_DEV  \
+  --from-literal=rox-api-token="${ACS__API_TOKEN}" \
+  --from-literal=rox-api-endpoint="${ACS__CENTRAL_ENDPOINT}"
+ 
 
 echo "Secret to push and pull from Quay.io"
 QUAY_SECRET=workdir/quay-auth.yaml
