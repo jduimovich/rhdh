@@ -7,6 +7,6 @@ if [ -z "$1" ]; then
     exit 0
 fi 
 
-ENV_VARS_MUST_EXIST=$(grep "\${" $1 | cut -d ':' -f 2 | tr -d '\${}' | xargs -n1 echo -n " ")
+ENV_VARS_MUST_EXIST=$(grep "\${" $1 | cut -d '#' -f 1 | cut -d ':' -f 2 | tr -d '\${}' | xargs -n1 echo -n " ")
 BINARIES_MUST_EXIST="yq jq oc"
 $SCRIPTDIR/util/verify-deps-exist "$ENV_VARS_MUST_EXIST" "$BINARIES_MUST_EXIST"

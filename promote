@@ -1,0 +1,30 @@
+# promote 
+# empty push commit push with /promote
+# empty push commit PR with /promote
+
+ENV=${1:-dev}
+METHOD=${2:-pr}   
+ 
+if [ $ENV == "dev" ]; then 
+    ENV_DEST=stage
+fi
+if [ $ENV == "stage" ]; then 
+    ENV_DEST=prod
+fi
+if [ -z $ENV_DEST ]; then 
+    echo "promotion env should be dev (promotes to stage) or stage (promotes to prod)"
+fi  
+if [ "$METHOD" == "pr" ]; then  
+    echo 
+    echo "Promote from $ENV to $ENV_DEST via Pull-Request"
+    BR=pr-branch-$(date '+%m-%d-%s')
+    git checkout -b $BR
+    git commit --allow-empty -m "empty commit"  
+    git push --set-upstream origin $BR
+    gh pr create --title "Promote from $ENV to $ENV_DEST" --body "/promote $ENV"
+else
+    echo 
+    echo "Promote from $ENV to $ENV_DEST via Empty Commit Push Message"
+    git commit --allow-empty -m "/promote $ENV"  ; git push
+fi 
+ 
