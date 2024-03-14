@@ -26,8 +26,9 @@ They will print the required env vars if missing.
 
 The current extensions are. 
  
-1. "Enable the certificate for ArgoCD"  
-2. "Enable gitlab"   
-3. "Create a demo namespace"   
-4. "Kube and service account hacks using pipeline SA"  
+1. "Create a demo namespace and configure it"    
+
+
+Testing in the demo cluster, allocate a cluster here
+https://demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.poc-project-dance.prod&utm_source=webapp&utm_medium=share-link
 

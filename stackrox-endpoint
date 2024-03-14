@@ -1,2 +1,0 @@
-    - name: stackrox-endpoint
-      value: 'central.rhacs-operator.svc.cluster.local:443'

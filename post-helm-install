@@ -4,13 +4,11 @@ echo "Additional config after default helm install"
 echo "When the installer implements these features, remove from here"
 
 # so each script doesn't restart until the end
-export DISABLE_REFRESH=true 
 
 echo "Configure RHTAP with the secrets for quay and github" 
 bash $SCRIPTDIR/default-rhtap-ns-configure
 
-echo "Enable gitlab" 
-bash $SCRIPTDIR/enable-gitlab    
-
-export DISABLE_REFRESH=false 
-$SCRIPTDIR/util/recycle-backstage 
+# export DISABLE_REFRESH=true 
+# enable any updates to config here and only recycle backstage once 
+# export DISABLE_REFRESH=false 
+# $SCRIPTDIR/util/recycle-backstage 
