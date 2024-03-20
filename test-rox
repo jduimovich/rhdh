@@ -1,0 +1,26 @@
+ 
+ 
+ ROX_CENTRAL_ENDPOINT=$(kubectl get routes central -n rhacs-operator -o jsonpath={.spec.host}) 
+
+#echo $ROX_API_TOKEN
+echo $ROX_CENTRAL_ENDPOINT 
+curl_insecure=-k
+
+OUT=$(mktemp -d) 
+echo 
+echo curl $curl_insecure -s -L -H "Authorization: Bearer $ROX_API_TOKEN" \
+          "https://${ROX_CENTRAL_ENDPOINT}/api/cli/download/roxctl-linux" \
+          --output $OUT/roxctl
+echo 
+
+curl $curl_insecure -s -L -H "Authorization: Bearer $ROX_API_TOKEN" \
+          "https://${ROX_CENTRAL_ENDPOINT}/api/cli/download/roxctl-linux" \
+          --output $OUT/roxctl
+ERR=$? 
+if [ $ERR == 0 ]; then
+    echo "BINARY IS HERE"
+    ls -al $OUT
+else 
+    echo "FAILED to download error code $ERR"
+fi 
+

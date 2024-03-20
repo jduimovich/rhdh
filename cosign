@@ -1,0 +1,23 @@
+SIGNING_PUB_KEY=$(kubectl get secrets -n openshift-pipelines signing-secrets -o jsonpath={.data.'cosign\.pub'})
+
+SECRET_NAME=cosign-pub
+NS=rhtap-app-development  
+COSIGN_SECRET=$(mktemp)
+cat <<COSIGN >$COSIGN_SECRET
+apiVersion: v1
+data:
+  cosign.pub: $SIGNING_PUB_KEY
+immutable: true
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-chains
+    operator.tekton.dev/operand-name: tektoncd-chains
+  name: $SECRET_NAME
+  namespace: $NS
+type: Opaque
+COSIGN
+ 
+kubectl delete secret $SECRET_NAME -n $NS  
+kubectl apply -f $COSIGN_SECRET
