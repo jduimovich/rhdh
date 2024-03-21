@@ -1,0 +1,39 @@
+#!/bin/bash
+
+clear
+
+echo "Your Configuration" 
+echo "Your ENV (DEVELOPER_HUB__CATALOG__URL)  $DEVELOPER_HUB__CATALOG__URL" 
+
+CONFIG=$(mktemp)
+CONFIG2=$(mktemp)
+kubectl get configmap -n rhtap developer-hub-app-config-extra -o yaml >$CONFIG
+yq .data.\"app-config.extra.yaml\" $CONFIG > $CONFIG2   
+TARGET=$(yq ".catalog.locations[0].target" $CONFIG2)
+echo "Your In-Cluster config $TARGET"  
+echo 
+
+
+URL=https://$(kubectl get routes central -n rhacs-operator -o jsonpath={.spec.host})
+PW=$(oc -n rhacs-operator get secret central-htpasswd -o go-template='{{index .data "password" | base64decode}}')
+  
+echo
+echo "ACS Login = $URL"  
+echo "ACS PW = $PW"   
+
+URL=https://$(kubectl get routes openshift-gitops-server -n openshift-gitops -o jsonpath={.spec.host})
+P64=$(kubectl get secret openshift-gitops-cluster -n openshift-gitops -ojsonpath='{.data.admin\.password}' )
+ARGOPW=$(echo $P64 | base64 --decode -i -)
+echo
+echo "openshift-gitops argocd console = $URL" 
+echo "openshift-gitops argo pw = $ARGOPW" 
+
+URL=https://$(kubectl get routes rhtap-argocd-server -n rhtap -o jsonpath={.spec.host})
+P64=$(kubectl get secret rhtap-argocd-cluster -n rhtap -ojsonpath='{.data.admin\.password}' )
+ARGOPW=$(echo $P64 | base64 --decode -i -)
+echo
+echo "rhtap argocd console = $URL" 
+echo "rhtap argo pw = $ARGOPW" 
+  
+
+  
