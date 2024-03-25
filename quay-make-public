@@ -1,0 +1,15 @@
+
+
+THE_QUAY_REPO=$1
+if [ -z $THE_QUAY_REPO ]; then
+    echo "Usage $0 repo-name"
+    exit 
+fi
+echo "Making $THE_QUAY_REPO Public in $MY_QUAY_USER" 
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer $MY_QUAY_TOKEN" \
+  --request POST \
+  --data '{"visibility": "public"}' \
+  https://quay.io/api/v1/repository/$MY_QUAY_USER/$THE_QUAY_REPO/changevisibility
+
+  
