@@ -1,3 +1,5 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+source $SCRIPTDIR/util/verify-deps-exist "MY_QUAY_USER MY_QUAY_TOKEN" "curl"
 
 
 THE_QUAY_REPO=$1
@@ -12,4 +14,4 @@ curl --header "Content-Type: application/json" \
   --data '{"visibility": "public"}' \
   https://quay.io/api/v1/repository/$MY_QUAY_USER/$THE_QUAY_REPO/changevisibility
 
-  
+  echo https://quay.io/$MY_QUAY_USER/$THE_QUAY_REPO 

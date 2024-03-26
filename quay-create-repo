@@ -1,4 +1,6 @@
-echo 11111
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+ 
+source $SCRIPTDIR/util/verify-deps-exist "MY_QUAY_USER MY_QUAY_TOKEN" "curl"
 
 THE_QUAY_REPO=$1
 if [ -z $THE_QUAY_REPO ]; then
@@ -14,3 +16,5 @@ curl --header "Content-Type: application/json" \
   --request POST \
   --data  "$DATA" \
   https://quay.io/api/v1/repository
+
+  echo https://quay.io/$MY_QUAY_USER/$THE_QUAY_REPO 
