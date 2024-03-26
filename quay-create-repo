@@ -1,0 +1,16 @@
+echo 11111
+
+THE_QUAY_REPO=$1
+if [ -z $THE_QUAY_REPO ]; then
+    echo "Usage $0 repo-name"
+    exit 
+fi
+
+COMMAND='{"repository": "%s","visibility": "public","namespace": "%s","description": "Public Repo","repo_kind": "image"}'
+DATA=$(printf "$COMMAND" $THE_QUAY_REPO $MY_QUAY_USER)  
+echo "Creating $THE_QUAY_REPO in $MY_QUAY_USER"  
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer $MY_QUAY_TOKEN" \
+  --request POST \
+  --data  "$DATA" \
+  https://quay.io/api/v1/repository
