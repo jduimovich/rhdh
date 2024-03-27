@@ -5,7 +5,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # the namespaces will be created by app of apps
 # you can reuse a namespace trio across multiple templates
 # or every time. 
-source $SCRIPTDIR/util/verify-deps-exist "MY_GITLAB_TOKEN" "oc"
+source $SCRIPTDIR/util/verify-deps-exist "MY_GITLAB_TOKEN MY_GITLAB_USER" "oc"
 source $SCRIPTDIR/config 
    
 APP_NS_DEV=rhtap-app-development 
@@ -17,6 +17,7 @@ metadata:
   name: gitops-auth-secret
 type: kubernetes.io/basic-auth
 stringData:
+  username: $MY_GITLAB_USER
   password: $MY_GITLAB_TOKEN
 SECRET
 
