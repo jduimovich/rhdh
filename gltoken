@@ -1,0 +1,26 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+# Scripts to configure three namespaces for dev,stage,prod
+# the namespaces can exist in advance or you can run the templates and 
+# the namespaces will be created by app of apps
+# you can reuse a namespace trio across multiple templates
+# or every time. 
+source $SCRIPTDIR/util/verify-deps-exist "MY_GITLAB_TOKEN" "oc"
+source $SCRIPTDIR/config 
+   
+APP_NS_DEV=rhtap-app-development 
+SECRET=workdir/secret.yaml 
+cat <<SECRET >$SECRET
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitops-auth-secret
+type: kubernetes.io/basic-auth
+stringData:
+  password: $MY_GITLAB_TOKEN
+SECRET
+
+echo "Secret for git access to update repos"    
+oc delete -n $APP_NS_DEV -f $SECRET
+oc apply -n $APP_NS_DEV -f $SECRET
+  
