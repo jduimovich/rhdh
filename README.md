@@ -21,12 +21,23 @@ bash install-from-helm
 ```
 bash post-helm-install
 ```
-The scripts assume the presence of env vars with passwords and tokens.
-They will print the required env vars if missing. 
-
-The current extensions are. 
  
-1. "Create a demo namespace and configure it"    
+# utilities
+
+Quay (uses MY_QUAY_USER)
+`quay-create-repo <reponame>`
+`quay-make-public <existing-reponame>`
+
+RHTAP 
+`rhtap-argo-login` used to login to the argo instance used by rhtap.
+Uses `argocd` CLI  (ie `argocd app list`, `argocd app sync` )
+
+`rhtap-pws` --- show local cluster passwords and accounts 
+
+`rhtap-promote --repo repo-url --env {dev/stage}` promote from dev to stage or stage to prod with a pull-request 
+
+`rhtap-test-rox` --- is my ROX_API_TOKEN working ?
+
 
 
 Testing in the demo cluster, allocate a cluster here

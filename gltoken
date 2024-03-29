@@ -14,7 +14,7 @@ cat <<SECRET >$SECRET
 apiVersion: v1
 kind: Secret
 metadata:
-  name: gitlab-gitops-auth-secret
+  name: gitlab-auth-secret
 type: kubernetes.io/basic-auth
 stringData:
   username: "oauth2"
