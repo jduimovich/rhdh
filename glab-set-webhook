@@ -1,0 +1,28 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+source $SCRIPTDIR/util/verify-deps-exist "MY_GITLAB_TOKEN" "curl"
+source $SCRIPTDIR/config 
+   
+BASE_REPO_NAME=$1 
+HOOK=$2 
+if   [ -z $BASE_REPO_NAME ] || [ -z $HOOK ]  ; then
+    echo "Usage $0 reponame webhook <git host, default gitlab.com"
+    exit
+fi
+GLAB="${3:-gitlab.com}"  
+
+
+#project id for repo 
+for repo in $BASE_REPO_NAME $BASE_REPO_NAME-gitops 
+do 
+    PROJECT_ID=$( curl -s -XGET -H "Content-Type: application/json" --header "PRIVATE-TOKEN: $MY_GITLAB_TOKEN" https://$GLAB/api/v4/projects/$MY_GITLAB_USER%2F$repo  | jq .id)
+    if [ $PROJECT_ID == null ]; then
+        echo "No Project ID for $repo in $MY_GITLAB_USER"
+        exit
+    fi  
+    echo "Setting webhook for $repo ($PROJECT_ID) to $HOOK"  
+    curl -s -k --request POST --header "PRIVATE-TOKEN: $MY_GITLAB_TOKEN" --data "merge_requests_events=true" \
+        https:/$GLAB/api/v4/projects/$PROJECT_ID/hooks?url=$HOOK  | jq
+done
+
+     
