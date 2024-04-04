@@ -21,12 +21,12 @@ echo
 echo "ACS Login = $URL"  
 echo "ACS PW = $PW"   
 
-URL=https://$(kubectl get routes openshift-gitops-server -n openshift-gitops -o jsonpath={.spec.host})
-P64=$(kubectl get secret openshift-gitops-cluster -n openshift-gitops -ojsonpath='{.data.admin\.password}' )
-ARGOPW=$(echo $P64 | base64 --decode -i -)
-echo
-echo "openshift-gitops argocd console = $URL" 
-echo "openshift-gitops argo pw = $ARGOPW" 
+# URL=https://$(kubectl get routes openshift-gitops-server -n openshift-gitops -o jsonpath={.spec.host})
+# P64=$(kubectl get secret openshift-gitops-cluster -n openshift-gitops -ojsonpath='{.data.admin\.password}' )
+# ARGOPW=$(echo $P64 | base64 --decode -i -)
+# echo
+# echo "openshift-gitops argocd console = $URL" 
+# echo "openshift-gitops argo pw = $ARGOPW" 
 
 URL=https://$(kubectl get routes rhtap-argocd-server -n rhtap -o jsonpath={.spec.host})
 P64=$(kubectl get secret rhtap-argocd-cluster -n rhtap -ojsonpath='{.data.admin\.password}' )

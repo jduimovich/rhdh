@@ -1,28 +1,3 @@
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
-
-# Scripts to configure three namespaces for dev,stage,prod
-# the namespaces can exist in advance or you can run the templates and 
-# the namespaces will be created by app of apps
-# you can reuse a namespace trio across multiple templates
-# or every time. 
-source $SCRIPTDIR/util/verify-deps-exist "ACS__API_TOKEN ACS__CENTRAL_ENDPOINT MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
-source $SCRIPTDIR/config 
-  
-APP_NS_ROOT="${1:-rhtap}"
-SUFFIXES="development stage prod"  
-
-function configure_namespace() {  
-  echo "Ensure all namespaces exist and are configured $1" 
-  kubectl get ns $1 &> /dev/null
-  ERR=$?
-  if [  "$ERR" != "0" ]
-  then
-      oc new-project $1 
-  else
-      echo "$1 exists"
-  fi
-CONFIGURE_JOB=$(mktemp)
-cat <<CONFIGURE_JOB >$CONFIGURE_JOB
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -40,7 +15,7 @@ spec:
         - /bin/bash
         - -c
         - |
-          NS=$1
+          NS=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace) 
           echo "Initialize RHTAP Namespace: $NS"  
           cat <<CONFIGURE_PIPELINE | oc create -f - 
           apiVersion: tekton.dev/v1
@@ -65,11 +40,3 @@ spec:
           CONFIGURE_PIPELINE
           
       restartPolicy: Never
-CONFIGURE_JOB
-oc create -f $CONFIGURE_JOB
-}
-
-for suffix in $SUFFIXES ; do
-  configure_namespace $APP_NS_ROOT-$suffix
-done 
-  

@@ -1,0 +1,94 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+# Scripts to configure three namespaces for dev,stage,prod
+# the namespaces can exist in advance or you can run the templates and 
+# the namespaces will be created by app of apps
+# you can reuse a namespace trio across multiple templates
+# or every time. 
+source $SCRIPTDIR/util/verify-deps-exist "ACS__API_TOKEN ACS__CENTRAL_ENDPOINT MY_GITHUB_TOKEN MY_QUAY_USER MY_QUAY_CLI_TOKEN" "yq kubectl oc"
+source $SCRIPTDIR/config 
+  
+APP_NS_ROOT="${1:-rhtap}"
+APP_NS_DEV=$APP_NS_ROOT-development
+APP_NS_STAGE=$APP_NS_ROOT-stage
+APP_NS_PROD=$APP_NS_ROOT-prod 
+
+ALL_NS="$APP_NS_DEV $APP_NS_STAGE $APP_NS_PROD"
+
+echo 
+echo "Ensure all namespaces exist and are configured $ALL_NS" 
+
+for APP_NS in $ALL_NS ; do
+  kubectl get ns $APP_NS &> /dev/null
+  ERR=$?
+  if [  "$ERR" != "0" ]
+  then
+      oc new-project $APP_NS
+      oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops
+  else
+      echo "$APP_NS exists and is labelled for gitops"
+      oc label namespace  $APP_NS argocd.argoproj.io/managed-by=openshift-gitops &> /dev/null
+  fi
+done 
+
+echo 
+echo "Configuring $APP_NS_ROOT for development, stage, prod" 
+# development gets gitops-auth, rox, and push and pull to quay
+
+SECRET=workdir/secret.yaml
+cat <<SECRET >$SECRET
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitops-auth-secret
+type: kubernetes.io/basic-auth
+stringData:
+  password: $MY_GITHUB_TOKEN
+SECRET
+
+echo "Secret for git access to update repos" 
+oc apply -n $APP_NS_DEV -f $SECRET
+ 
+echo "Secret for ACS StackRox scanners "
+SECRET_NAME=rox-api-token 
+kubectl delete secret $SECRET_NAME -n $APP_NS_DEV &> /dev/null
+kubectl create secret generic $SECRET_NAME -n $APP_NS_DEV  \
+  --from-literal=rox-api-token="${ACS__API_TOKEN}" \
+  --from-literal=rox-api-endpoint="${ACS__CENTRAL_ENDPOINT}"
+ 
+
+echo "Secret to push and pull from Quay.io"
+QUAY_SECRET=workdir/quay-auth.yaml
+cat <<QUAY_SECRET >$QUAY_SECRET
+{
+  "auths": {
+    "quay.io/$MY_QUAY_USER": {
+      "auth": "$MY_QUAY_CLI_TOKEN",
+      "email": ""
+    }
+  }
+}
+QUAY_SECRET
+
+SECRET_NAME=rhtap-registry-pull-secret 
+for APP_NS in $ALL_NS ; do  
+  echo "Configuring $ALL_NS"
+  kubectl get secret $SECRET_NAME -n $APP_NS &> /dev/null
+  ERR=$?
+  if [  "$ERR" == "0" ]
+  then
+      echo "Secret $SECRET_NAME already exists"
+  else
+      kubectl create secret docker-registry $SECRET_NAME \
+          --from-file=.dockerconfigjson="$QUAY_SECRET" --dry-run=client -o yaml | \
+          kubectl apply -n $APP_NS -f -
+      oc secrets link pipeline -n $APP_NS $SECRET_NAME  --for=pull,mount
+      oc secrets link default -n $APP_NS $SECRET_NAME  --for=pull,mount
+      kubectl patch serviceaccount default \
+        -p "{\"imagePullSecrets\": [{\"name\": \"$SECRET_NAME\"}]}" -n $APP_NS
+      kubectl patch serviceaccount pipeline \
+        -p "{\"imagePullSecrets\": [{\"name\": \"$SECRET_NAME\"}]}" -n $APP_NS
+  fi 
+done 
+
+   
