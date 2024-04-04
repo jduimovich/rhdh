@@ -27,7 +27,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   generateName: initialize-namespaces-
-spec: 
+spec:  
+  ttlSecondsAfterFinished: 10
   template:         
     metadata:
       generateName: initialize-namespaces-  
@@ -66,7 +67,7 @@ spec:
           
       restartPolicy: Never
 CONFIGURE_JOB
-oc create -f $CONFIGURE_JOB
+oc create -f $CONFIGURE_JOB  
 }
 
 for suffix in $SUFFIXES ; do
