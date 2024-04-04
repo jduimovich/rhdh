@@ -1,14 +1,24 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
+echo 
 echo "Additional config after default helm install"
 echo "When the installer implements these features, remove from here"
 
 echo "1.0 installed" 
 
-echo "Gitlab token added with username" 
-bash $SCRIPTDIR/gltoken
-
-# export DISABLE_REFRESH=true 
+echo "Gitlab token added with username, will be a noop when installer updates" 
+bash $SCRIPTDIR/gitlab-set-token
+ 
 # enable any updates to config here and only recycle backstage once 
-# export DISABLE_REFRESH=false 
-# $SCRIPTDIR/util/recycle-backstage 
+# recycle takes a long time
+NEEDS_RECYCLE=false
+export DISABLE_REFRESH=true 
+#
+# add RHDH config here and uncomment the recycle flag
+# NEEDS_RECYCLE=true
+# 
+export DISABLE_REFRESH=false 
+
+if [ "$NEEDS_RECYCLE" == "true" ]; then 
+    $SCRIPTDIR/util/recycle-backstage 
+fi

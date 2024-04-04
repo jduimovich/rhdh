@@ -1,3 +1,4 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
 cd ../dance
 
@@ -26,5 +27,5 @@ mv private.new-env private.env
 ./bin/make.sh values 
 helm upgrade installer rhtap/rhtap --timeout 10m --install --create-namespace --namespace rhtap --values private-values.yaml
 
-
+bash $SCRIPTDIR/post-helm-install 
  
