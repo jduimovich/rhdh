@@ -7,7 +7,7 @@ echo "When the installer implements these features, remove from here"
 echo "1.0 installed" 
 
 echo "Gitlab token added with username, will be a noop when installer updates" 
-bash $SCRIPTDIR/gitlab-set-token
+bash $SCRIPTDIR/gitlab-create-secret
  
 # enable any updates to config here and only recycle backstage once 
 # recycle takes a long time
