@@ -12,8 +12,10 @@ mv private.new-env private.env
 
 echo "Using catalog $DEVELOPER_HUB__CATALOG__URL "
 
+CHART=rhtap/redhat-trusted-application-pipeline 
 ./bin/make.sh values 
-helm upgrade installer rhtap/rhtap --timeout 10m --install --create-namespace --namespace rhtap --values private-values.yaml
+helm upgrade installer $CHART --timeout 10m --install --create-namespace --namespace rhtap --values private-values.yaml
+
 
 popd
 

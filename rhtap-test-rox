@@ -9,12 +9,12 @@ curl_insecure=-k
 OUT=$(mktemp -d) 
 echo 
 echo curl $curl_insecure -s -L -H "Authorization: Bearer $ROX_API_TOKEN" \
-          "https://${ROX_CENTRAL_ENDPOINT}/api/cli/download/roxctl-linux" \
+          "https://${ROX_CENTRAL_ENDPOINT}:443/api/cli/download/roxctl-linux" \
           --output $OUT/roxctl
 echo 
 
 curl $curl_insecure -s -L -H "Authorization: Bearer $ROX_API_TOKEN" \
-          "https://${ROX_CENTRAL_ENDPOINT}/api/cli/download/roxctl-linux" \
+          "https://${ROX_CENTRAL_ENDPOINT}:443/api/cli/download/roxctl-linux" \
           --output $OUT/roxctl
 ERR=$? 
 if [ $ERR == 0 ]; then
