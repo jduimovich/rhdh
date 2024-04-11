@@ -3,16 +3,28 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pushd ../rhtap-installer  
 
 # ROX_API_TOKEN changes for reinstalls
+echo "Removing cached ACS__API_TOKEN in private.env"
 grep -v ACS__API_TOKEN private.env > private.new-env 
 mv private.new-env private.env
 
 # DEVELOPER_HUB__CATALOG__URL changes for reinstalls
+echo "Removing cached DEVELOPER_HUB__CATALOG__URL in private.env"
 grep -v DEVELOPER_HUB__CATALOG__URL private.env > private.new-env 
 mv private.new-env private.env
 
-echo "Using catalog $DEVELOPER_HUB__CATALOG__URL "
+echo "Using catalog $DEVELOPER_HUB__CATALOG__URL"
+
+echo "Helm Charts installed"
+helm repo update
+echo "Helm Charts in rhtap"
+helm search repo rhtap
+echo "Helm Charts called redhat-trusted-application-pipeline"
+helm search repo redhat-trusted-application-pipeline
 
 CHART=rhtap/redhat-trusted-application-pipeline 
+
+echo "Installing chart called rhtap/redhat-trusted-application-pipeline "
+
 ./bin/make.sh values 
 helm upgrade installer $CHART --timeout 10m --install --create-namespace --namespace rhtap --values private-values.yaml
 
