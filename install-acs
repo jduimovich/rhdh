@@ -1,0 +1,91 @@
+
+
+ACS_SUB=workdir/acs.yaml
+cat <<ACS_SUB >$ACS_SUB
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:  
+  labels:
+    operators.coreos.com/rhacs-operator.rhacs-operator: ""
+  name: rhacs-operator
+  namespace: rhacs-operator 
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: rhacs-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: rhacs-operator.v4.4.1
+ACS_SUB
+oc apply -f $ACS_SUB
+
+while true
+do
+STATE=$(oc get subscription rhacs-operator  -n rhacs-operator -o jsonpath={.status.state})
+echo $STATE
+if [ $STATE = "AtLatestKnown" ]; then
+  break
+fi 
+done
+
+CENTRAL=workdir/central.yaml
+cat <<CENTRAL >$CENTRAL
+apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: stackrox-central-services
+  namespace: rhacs-operator
+spec:
+  monitoring:
+    openshift:
+      enabled: true
+  central:
+    notifierSecretsEncryption:
+      enabled: false
+    exposure:
+      loadBalancer:
+        enabled: false
+        port: 443
+      nodePort:
+        enabled: false
+      route:
+        enabled: true
+    telemetry:
+      enabled: true
+    db:
+      isEnabled: Default
+      persistence:
+        persistentVolumeClaim:
+          claimName: central-db
+    persistence:
+      persistentVolumeClaim:
+        claimName: stackrox-db
+  egress:
+    connectivityPolicy: Online
+  scannerV4:
+    db:
+      persistence:
+        persistentVolumeClaim:
+          claimName: scanner-v4-db
+    indexer:
+      scaling:
+        autoScaling: Enabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 3
+    matcher:
+      scaling:
+        autoScaling: Enabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 3
+    scannerComponent: Default
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: Enabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 3
+CENTRAL
+oc apply -f $CENTRAL
