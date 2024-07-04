@@ -21,7 +21,7 @@ helm search repo rhtap
 echo "Helm Charts called redhat-trusted-application-pipeline"
 helm search repo redhat-trusted-application-pipeline
 
-CHART=rhtap/redhat-trusted-application-pipeline 
+CHART=openshift-helm-charts/redhat-trusted-application-pipeline 
 
 echo "Installing chart called rhtap/redhat-trusted-application-pipeline "
 
