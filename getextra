@@ -1,0 +1,29 @@
+ 
+
+CM=$(mktemp) 
+RHDH_NS=rhtap 
+APP_CONFIG_CM_NAME=redhat-developer-hub-app-config-extra
+APP_CONFIG_DATA=workdir/app-config-extra 
+kubectl get configmap -n $RHDH_NS $APP_CONFIG_CM_NAME -o yaml >$CM
+yq .data.\"app-config.extra.yaml\" $CM > $APP_CONFIG_DATA  
+yq .integrations   $APP_CONFIG_DATA 
+
+
+for key in \
+GITHUB__APP__ID GITHUB__APP__CLIENT__ID GITHUB__APP__CLIENT__SECRET \
+GITHUB__APP__WEBHOOK__URL GITHUB__APP__WEBHOOK__SECRET GITHUB__APP__PRIVATE_KEY
+do
+echo -n "$key = "
+kubectl get secret redhat-developer-hub-rhtap-config -n rhtap -o jsonpath={.data.$key}  | base64 -d
+echo 
+done
+
+
+echo 
+for key in  DEVELOPER_HUB__CATALOG__URL
+do
+echo -n "$key = "
+kubectl get secret redhat-developer-hub-rhtap-config -n rhtap -o jsonpath={.data.$key}  | base64 -d
+echo 
+done
+echo 
