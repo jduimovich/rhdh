@@ -58,3 +58,13 @@ echo "rhtap argo pw = $ARGOPW"
 WEBHOOK=https://$(oc get routes -n openshift-pipelines pipelines-as-code-controller -ojsonpath={.spec.host})
 echo
 echo "Pac Webhook = $WEBHOOK"  
+
+
+Homepage=https://$(oc get routes -n rhtap redhat-developer-hub  -ojsonpath={.spec.host})
+echo
+echo "Homepage = $Homepage"  
+
+
+echo "Callback GITHUB = $Homepage/api/auth/github/handler/frame"  
+echo "Callback GITLAB = $Homepage/api/auth/gitlab/handler/frame"  
+ 
