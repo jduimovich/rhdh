@@ -55,4 +55,6 @@ echo "rhtap argocd console = $URL"
 echo "rhtap argo pw = $ARGOPW" 
   
 
-  
+WEBHOOK=https://$(oc get routes -n openshift-pipelines pipelines-as-code-controller -ojsonpath={.spec.host})
+echo
+echo "Pac Webhook = $WEBHOOK"  
