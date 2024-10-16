@@ -1,0 +1,8 @@
+
+
+curl --request GET \
+  --url 'https://api.bitbucket.org/2.0/repositories' \
+  --header "Authorization: Basic $BITBUCKET_USER:$BITBUCKET_APP_PASSWORD" \
+  --header 'Accept: application/json'
+
+  
