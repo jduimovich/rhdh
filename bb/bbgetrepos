@@ -1,8 +1,10 @@
 
 
+PW=$(echo "$BITBUCKET_USER:$BITBUCKET_APP_PASSWORD" | base64 )
+echo $PW
 curl --request GET \
   --url 'https://api.bitbucket.org/2.0/repositories' \
-  --header "Authorization: Basic $BITBUCKET_USER:$BITBUCKET_APP_PASSWORD" \
+  --header "Authorization: Basic $PW" \
   --header 'Accept: application/json'
 
   

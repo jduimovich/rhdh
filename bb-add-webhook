@@ -1,0 +1,38 @@
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
+
+WEBHOOK=https://$(oc get routes -n openshift-pipelines pipelines-as-code-controller -ojsonpath={.spec.host})
+echo "Set Webhook: $WEBHOOK"
+
+IFS='' read -r -d '' DATA <<EOF
+    {
+      "description": "Webhook Description",
+      "url": "$WEBHOOK",
+      "active": true, 
+      "events": [
+        "repo:push",
+        "issue:created",
+        "issue:updated"
+      ]
+    }
+EOF
+
+
+echo "$DATA"
+echo $1   
+PW=$(echo "$BITBUCKET_USER:$BITBUCKET_APP_PASSWORD" | base64 )
+echo $PW 
+API_URL=https://api.bitbucket.org/2.0/repositories/$1/hooks 
+echo $API_URL
+echo curl -X POST \
+  --url $API_URL \
+  --header "Authorization: Basic $PW \
+  --header 'Content-Type: application/json' \
+  -d "'" "$DATA" "'"
+
+curl -v -X POST \
+  --url $API_URL \
+  --header "Authorization: Basic $PW \
+  --header 'Content-Type: application/json' \
+  -d "'" "$DATA" "'"
+
+echo "$?"
