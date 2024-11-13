@@ -83,6 +83,7 @@ if [ -f application.yaml ]; then
   git add $DST_PATCH
   git commit -m "Promoted ${SRC_OVERLAY} to ${DST_OVERLAY}"
   git push --set-upstream origin $PR
+  gh repo set-default $MY_GITHUB_USER/$(basename $GITOPS_REPO .git)
   gh pr create --title "Promote ${SRC_OVERLAY} to ${DST_OVERLAY}" --body "$PR" 
 else 
   echo "$GITOPS_REPO is not a gitops-repo, missing application.yaml in root dir"
