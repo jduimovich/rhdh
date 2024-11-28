@@ -35,35 +35,13 @@ checkNSExists $RHTAP_NS exit
 
 CONFIG=$(mktemp)
 CONFIG2=$(mktemp)
-<<<<<<< HEAD
-kubectl get configmap -n rhtap developer-hub-rhtap-app-config  -o yaml >$CONFIG
-=======
 oc get configmap -n $RHTAP_NS developer-hub-rhtap-app-config -o yaml >$CONFIG
->>>>>>> 27dcd93 (secrets)
 yq .data.\"app-config.rhtap.yaml\" $CONFIG > $CONFIG2   
 TARGET=$(yq ".catalog.locations[0].target" $CONFIG2)
 echo "DEVELOPER_HUB__CATALOG__URL is $DEVELOPER_HUB__CATALOG__URL" 
 echo "RHDH Configured to use: $TARGET"  
 echo 
 
-<<<<<<< HEAD
-kubectl get ns rhacs-operator 2&> /dev/null
-ERR=$?
-if [ $ERR == 0 ]; then
-    URL=https://$(kubectl get routes central -n rhacs-operator -o jsonpath={.spec.host})
-    PW=$(oc -n rhacs-operator get secret central-htpasswd -o go-template='{{index .data "password" | base64decode}}')
-    
-    echo
-    echo "ACS Login = $URL"  
-    echo "ACS PW = $PW" 
-else
-    echo "ACS external to this cluster"
-    echo "CENTRAL $ROX_CENTRAL_ENDPOINT" 
-fi 
-
-URL=https://$(kubectl get routes argocd-server -n rhtap -o jsonpath={.spec.host})
-P64=$(kubectl get secret argocd-cluster  -n rhtap -ojsonpath='{.data.admin\.password}' )
-=======
 function showRoutesInNS() { 
     echo $1
     RNS=$2 
@@ -77,42 +55,10 @@ function showRoutesInNS() {
 
 URL=https://$(oc get routes argocd-server -n $RHTAP_NS -o jsonpath={.spec.host})
 P64=$(oc get secret argocd-cluster -n rhtap -ojsonpath='{.data.admin\.password}' )
->>>>>>> 27dcd93 (secrets)
 ARGOPW=$(echo $P64 | base64 --decode -i -)
 echo
 echo "rhtap argocd console = $URL" 
 echo "rhtap argo pw = $ARGOPW" 
-<<<<<<< HEAD
-echo 
-
-function printRoutes2() { 
-    NS=$1
-    echo "Routes in $NS"
-    for r in $(kubectl get routes -n $NS -o name)
-    do
-        URL=https://$(kubectl get $r -n $NS -o jsonpath={.spec.host}  )
-        echo "$URL"  
-    done 
-    echo
-}
-function printRoutes() { 
-    NS=$1
-    URL=$(mktemp)
-    echo "Routes in $NS" >$URL
-    for r in $(kubectl get routes -n $NS -o name)
-    do
-        echo "https://$(kubectl get $r -n $NS -o jsonpath={.spec.host}  )" >>$URL &
-    done 
-    wait
-    cat $URL
-    echo
-}
-
-printRoutes rhtap 
-printRoutes rhtap-tas 
-printRoutes rhtap-tpa 
-
-=======
   
 showRoutesInNS "RHTAP URLS" $RHTAP_NS
 showRoutesInNS "TPA URLS" rhtap-tpa
@@ -122,7 +68,6 @@ echo "PW $(oc get secrets -n rhtap-tpa tpa-realm-chicken-admin -o jsonpath={.dat
 showRoutesInNS "TAS URLS" rhtap-tas
 showRoutesInNS "PAC URLS" openshift-pipelines
  
->>>>>>> 27dcd93 (secrets)
 WEBHOOK=https://$(oc get routes -n openshift-pipelines pipelines-as-code-controller -ojsonpath={.spec.host})
 echo
 echo "Pac Webhook = $WEBHOOK"  
