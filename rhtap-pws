@@ -1,26 +1,23 @@
 #!/bin/bash
 
 function checkNSExists() { 
-    kubectl get ns $1 &> /dev/null
+    oc get ns $1 &> /dev/null
     ERR=$?
     if [  "$ERR" != "0" ]
-    then
-        echo "$1 namespace missing!" 
+    then 
         $2
         return 1
-    else
-        echo "$1 namespace found"
+    else 
         return 0
     fi 
 } 
 
-echo "Check ACS Installation" 
-echo   
-checkNSExists "rhacs-operator" "echo 'ACS not installed on local machine.'"
+echo "Check ACS Installation"  
+checkNSExists "rhacs-operator" "echo ACS not installed on local machine."
 ERR=$?
 if [ "$ERR" = 0 ]
 then
-    URL=https://$(kubectl get routes central -n rhacs-operator -o jsonpath={.spec.host})
+    URL=https://$(oc get routes central -n rhacs-operator -o jsonpath={.spec.host})
     PW=$(oc -n rhacs-operator get secret central-htpasswd -o go-template='{{index .data "password" | base64decode}}')
     
     echo
@@ -28,8 +25,7 @@ then
     echo "ACS PW = $PW"   
 fi  
 
-RHTAP_NS=rhtap   
- echo
+RHTAP_NS=rhtap    
 echo "Check RHTAP Installation" 
 echo 
 
@@ -39,14 +35,18 @@ checkNSExists $RHTAP_NS exit
 
 CONFIG=$(mktemp)
 CONFIG2=$(mktemp)
+<<<<<<< HEAD
 kubectl get configmap -n rhtap developer-hub-rhtap-app-config  -o yaml >$CONFIG
+=======
+oc get configmap -n $RHTAP_NS developer-hub-rhtap-app-config -o yaml >$CONFIG
+>>>>>>> 27dcd93 (secrets)
 yq .data.\"app-config.rhtap.yaml\" $CONFIG > $CONFIG2   
 TARGET=$(yq ".catalog.locations[0].target" $CONFIG2)
 echo "DEVELOPER_HUB__CATALOG__URL is $DEVELOPER_HUB__CATALOG__URL" 
 echo "RHDH Configured to use: $TARGET"  
 echo 
- 
 
+<<<<<<< HEAD
 kubectl get ns rhacs-operator 2&> /dev/null
 ERR=$?
 if [ $ERR == 0 ]; then
@@ -63,10 +63,26 @@ fi
 
 URL=https://$(kubectl get routes argocd-server -n rhtap -o jsonpath={.spec.host})
 P64=$(kubectl get secret argocd-cluster  -n rhtap -ojsonpath='{.data.admin\.password}' )
+=======
+function showRoutesInNS() { 
+    echo $1
+    RNS=$2 
+    ROUTES=$(oc get routes -n $RNS -o name)
+    ROUTES=${ROUTES/ /$'\n'/}
+    for r in $ROUTES; do 
+        URL=https://$(oc get $r -n $RNS -o jsonpath={.spec.host})
+        echo " $URL" 
+    done 
+}
+
+URL=https://$(oc get routes argocd-server -n $RHTAP_NS -o jsonpath={.spec.host})
+P64=$(oc get secret argocd-cluster -n rhtap -ojsonpath='{.data.admin\.password}' )
+>>>>>>> 27dcd93 (secrets)
 ARGOPW=$(echo $P64 | base64 --decode -i -)
 echo
 echo "rhtap argocd console = $URL" 
 echo "rhtap argo pw = $ARGOPW" 
+<<<<<<< HEAD
 echo 
 
 function printRoutes2() { 
@@ -96,16 +112,17 @@ printRoutes rhtap
 printRoutes rhtap-tas 
 printRoutes rhtap-tpa 
 
+=======
+  
+showRoutesInNS "RHTAP URLS" $RHTAP_NS
+showRoutesInNS "TPA URLS" rhtap-tpa
+echo "TPA Logins" 
+echo "User $(oc get secrets -n rhtap-tpa tpa-realm-chicken-admin -o jsonpath={.data.username} | base64 -d)"
+echo "PW $(oc get secrets -n rhtap-tpa tpa-realm-chicken-admin -o jsonpath={.data.password} | base64 -d)" 
+showRoutesInNS "TAS URLS" rhtap-tas
+showRoutesInNS "PAC URLS" openshift-pipelines
+ 
+>>>>>>> 27dcd93 (secrets)
 WEBHOOK=https://$(oc get routes -n openshift-pipelines pipelines-as-code-controller -ojsonpath={.spec.host})
 echo
 echo "Pac Webhook = $WEBHOOK"  
-
-
-Homepage=https://$(oc get routes -n rhtap redhat-developer-hub  -ojsonpath={.spec.host})
-echo
-echo "Homepage = $Homepage"  
-
-
-echo "Callback GITHUB = $Homepage/api/auth/github/handler/frame"  
-echo "Callback GITLAB = $Homepage/api/auth/gitlab/handler/frame"  
- 
